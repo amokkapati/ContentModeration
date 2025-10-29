@@ -213,7 +213,5 @@ if __name__ == "__main__":
         print(f"Total posts collected: {len(combined_df)}")
         print(f"Cohort IDs saved to: {cohort_filename}")
         print(f"Total time taken: {((end_time - start_time) / 60):.2f} minutes")
-        print(f"\n⏰ WAIT 48-72 HOURS before running Pass 2")
-        print(f"   Then run: python collect_pass2.py")
     else:
         print("\n❌ No data collected")
