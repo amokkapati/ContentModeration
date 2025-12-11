@@ -6,11 +6,9 @@ from datetime import datetime, timezone
 import time
 import random
 
-# ⚠️ REPLACE WITH YOUR OWN API KEY (never share or commit this)
-YOUTUBE_API_KEY = "AIzaSyDHknkDr53q1v-pzf7mdsPOC_dfU6uOBdo"  # ← CHANGE THIS!
+YOUTUBE_API_KEY = ""
 youtube = build('youtube', 'v3', developerKey=YOUTUBE_API_KEY)
 
-# 6 CATEGORIES × 10 EXTREME QUERIES EACH = 60 TOTAL (30 original + 30 new for 2025-2026 research)
 guideline_searches = {
     "spam_deceptive_scams": [
         "free vbucks generator 2025 no human verification",
@@ -94,7 +92,7 @@ def search_videos_by_guideline(category, query, max_results=5):
             part='snippet',
             type='video',
             maxResults=max_results,
-            order='date',            # Most recent first → catches fresh re-uploads
+            order='date',         
             regionCode='US',
             relevanceLanguage='en'
         )
@@ -136,8 +134,7 @@ def assess_moderation_status(video_data, channel_data):
     comments = int(stats.get('commentCount', 0)) if stats.get('commentCount') else 0
     likes = int(stats.get('likeCount', 0)) if stats.get('likeCount') else 0
 
-    # === Calculate exact age of the video ===
-    published_at_str = snippet.get('publishedAt')  # e.g. "2025-11-28T14:22:10Z"
+    published_at_str = snippet.get('publishedAt')
     if published_at_str:
         published_dt = datetime.fromisoformat(published_at_str.replace('Z', '+00:00'))
         days_since_upload = (datetime.now(timezone.utc) - published_dt).days
@@ -170,9 +167,9 @@ def assess_moderation_status(video_data, channel_data):
         'made_for_kids': status.get('madeForKids', False),
         'appears_restricted_or_removed': is_restricted,
         'published_at': snippet.get('publishedAt'),
-        'upload_date': upload_date,                    # ← NEW: Human-readable date
-        'days_since_upload': days_since_upload,        # ← NEW: Integer days old
-        'duration': content_details.get('duration', 'N/A'),  # ← Bonus: ISO duration
+        'upload_date': upload_date
+        'days_since_upload': days_since_upload,
+        'duration': content_details.get('duration', 'N/A')
         'category_id': snippet.get('categoryId')
     }
 
@@ -228,7 +225,6 @@ def collect_guideline_data():
 
                 restriction_marker = "SURVIVED" if not assessment['appears_restricted_or_removed'] else "RESTRICTED"
 
-                # === Pretty age string for console ===
                 days = assessment['days_since_upload']
                 age_str = f"{days}d ago" if days is not None else "???"
                 print(f"    {idx}. {restriction_marker} | Views: {assessment['views']:>10,} | {age_str:>8} | {title[:58]}...")
@@ -258,7 +254,7 @@ def collect_guideline_data():
                     'url': f"https://www.youtube.com/watch?v={video_id}"
                 })
 
-            time.sleep(random.uniform(1.0, 2.5))  # Be kind to quota
+            time.sleep(random.uniform(1.0, 2.5))
 
     return all_data, timestamp
 
